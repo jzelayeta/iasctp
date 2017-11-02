@@ -8,3 +8,7 @@ curl -X POST http://localhost:3000/store/ -H 'content-type: application/json' -d
 # Getting values
 
 curl -X GET http://localhost:3000/store/1
+
+# Removing values
+
+curl -X GET http://localhost:3000/store/3
