@@ -11,3 +11,7 @@ exports.add = function(req, res){
     var value = req.body.value;
     res.json(store.add(key, value))
 };
+
+exports.remove = function(req, res){
+    res.json(store.remove(req.params.key))
+};
