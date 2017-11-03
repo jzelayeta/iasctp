@@ -7,11 +7,20 @@ exports.get = function(req, res) {
 };
 
 exports.add = function(req, res){
-    var key = req.body.key;
-    var value = req.body.value;
+    let key = req.body.key;
+    let value = req.body.value;
     res.json(store.add(key, value))
 };
 
 exports.remove = function(req, res){
     res.json(store.remove(req.params.key))
+};
+
+exports.getValuesGreaterThan = function(req, res){
+    console.log(req.body.value);
+    res.json(store.getValuesGreaterThan(req.params.value));
+};
+exports.getValuesLowerThan = function(req, res){
+    console.log(req.body.value);
+    res.json(store.getValuesLowerThan(req.params.value));
 };
