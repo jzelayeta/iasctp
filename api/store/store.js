@@ -2,6 +2,7 @@
  * Created by jzelayeta on 11/2/17.
  */
 
+const config = require('../../config');
 let keyValueStore = new Map();
 
 exports.get = function get(key){
