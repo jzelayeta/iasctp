@@ -9,7 +9,13 @@ exports.get = function(req, res) {
 exports.add = function(req, res){
     let key = req.body.key;
     let value = req.body.value;
-    res.json(store.add(key, value))
+    store.add(key, value)
+        .then((map) => {
+            res.json(map)
+        })
+        .catch((err) => {
+            res.json(err)
+        })
 };
 
 exports.remove = function(req, res){
@@ -17,10 +23,8 @@ exports.remove = function(req, res){
 };
 
 exports.getValuesGreaterThan = function(req, res){
-    console.log(req.body.value);
     res.json(store.getValuesGreaterThan(req.params.value));
 };
 exports.getValuesLowerThan = function(req, res){
-    console.log(req.body.value);
     res.json(store.getValuesLowerThan(req.params.value));
 };
