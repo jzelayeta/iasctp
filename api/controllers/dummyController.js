@@ -3,7 +3,13 @@
 var store = require('../store/store');
 
 exports.get = function(req, res) {
-    res.json(store.get(req.params.key))
+    store.get(req.params.key)
+        .then((value) => {
+            res.json(value);
+        })
+        .catch((err) => {
+            res.json(err);
+        })
 };
 
 exports.add = function(req, res){
@@ -19,7 +25,13 @@ exports.add = function(req, res){
 };
 
 exports.remove = function(req, res){
-    res.json(store.remove(req.params.key))
+    store.remove(req.params.key)
+        .then((response) => {
+            res.json(response);
+        })
+        .catch((err) => {
+            res.json(err);
+        })
 };
 
 exports.getValuesGreaterThan = function(req, res){

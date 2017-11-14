@@ -1,4 +1,5 @@
 {
   "maxKeySize": "2",
-  "maxValueSize": "10"
+  "maxValueSize": "10",
+  "nodeSize": 5
 }
