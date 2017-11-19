@@ -14,7 +14,7 @@ exports.valueLengthValidation = (value) => {
     return value.length > maxValueLength;
 };
 
-exports.hasEnoughSpace = (actualNodeSize) => {
+exports.hasEnoughSpace = (key, value, actualNodeSize) => {
     let nodeSize = config.nodeSize;
-    return actualNodeSize < nodeSize
+    return nodeSize >= actualNodeSize + key.length + value.length;
 };

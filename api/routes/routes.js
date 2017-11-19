@@ -12,7 +12,6 @@ module.exports = function(app) {
     app.route('/store/lower/:value')
         .get(dummyController.getValuesLowerThan);
 
-
     app.route('/store/')
         .post(dummyController.add);
 };

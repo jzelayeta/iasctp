@@ -1,5 +1,5 @@
 {
-  "maxKeySize": "2",
-  "maxValueSize": "10",
-  "nodeSize": 5
+  "maxKeySize": "5",
+  "maxValueSize": "40",
+  "nodeSize": 60
 }

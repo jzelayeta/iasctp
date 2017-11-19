@@ -9,6 +9,7 @@ class InsertError extends Error {
         super(message);
         this.name = this.constructor.name;
         this.message = message;
+        this.errors = {};
         Error.captureStackTrace(this, this.constructor.name);
     }
     setErrorsAndThrow(errors) {

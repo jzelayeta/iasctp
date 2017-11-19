@@ -4,7 +4,7 @@
   "description": "IASC TP UTN 2C 2017",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha --timeout 10000",
     "start": "nodemon server.js"
   },
   "repository": {
@@ -18,7 +18,10 @@
   },
   "homepage": "https://github.com/jzelayeta/iasctp#readme",
   "devDependencies": {
-    "nodemon": "^1.12.1"
+    "mocha": "^4.0.1",
+    "node-mocks-http": "^1.6.6",
+    "nodemon": "^1.12.1",
+    "should": "^13.1.3"
   },
   "dependencies": {
     "express": "^4.16.2"
