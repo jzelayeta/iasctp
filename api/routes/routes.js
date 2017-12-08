@@ -1,17 +1,18 @@
 'use strict';
 module.exports = function(app) {
-    var dummyController = require('../controllers/dummyController');
+    var { Controller } = require('../controllers/controller');
+    var controller = new Controller();
 
     app.route('/store/:key')
-        .get(dummyController.get)
-        .delete(dummyController.remove);
+        .get(function(req, res) { controller.get(req, res) })
+        .delete(function(req, res) { controller.remove(req, res) });
 
     app.route('/store/greater/:value')
-        .get(dummyController.getValuesGreaterThan);
+        .get(function(req, res) { controller.getValuesGreaterThan(req, res) });
 
     app.route('/store/lower/:value')
-        .get(dummyController.getValuesLowerThan);
+        .get(function(req, res) { controller.getValuesLowerThan(req, res) });
 
     app.route('/store/')
-        .post(dummyController.add);
+        .post(function(req, res) { controller.add(req, res) });
 };
