@@ -23,9 +23,7 @@ if (cluster.isMaster) {
 			};
 			
 			for(const id in cluster.workers) {
-				cluster.workers[id].send(message, function(response) {
-					console.log(response);
-				});
+				cluster.workers[id].send(message);
 			}
 			
 			//res.json('no se encontro');
@@ -85,7 +83,8 @@ else {
 							'data': value
 						};
 						
-						process.send(response);
+						//como respondo?
+						//process.send(response);
 					})
 					.catch((err) => {
 						var response = {
@@ -94,6 +93,7 @@ else {
 							'data': err
 						};
 						
+						//como respondo??
 						process.send(response);
 					})
 				break;
