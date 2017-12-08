@@ -4,7 +4,7 @@
   "description": "IASC TP UTN 2C 2017",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --timeout 10000",
+    "test": "NODE_ENV=test mocha --timeout 10000",
     "start": "nodemon server.js"
   },
   "repository": {

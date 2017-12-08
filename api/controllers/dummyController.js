@@ -1,6 +1,7 @@
 'use strict';
+var { Store } = require('../store/store');
 
-var store = require('../store/store');
+var store = new Store();
 
 exports.get = function(req, res) {
     store.get(req.params.key)
@@ -35,8 +36,20 @@ exports.remove = function(req, res){
 };
 
 exports.getValuesGreaterThan = function(req, res){
-    res.json(store.getValuesGreaterThan(req.params.value));
+    store.getValuesGreaterThan(req.params.value)
+        .then((response) =>{
+          res.json(response);
+        })
+        .catch((err) => {
+            res.json(err);
+        })
 };
 exports.getValuesLowerThan = function(req, res){
-    res.json(store.getValuesLowerThan(req.params.value));
+    store.getValuesLowerThan(req.params.value)
+        .then((response) =>{
+          res.json(response);
+        })
+        .catch((err) => {
+            res.json(err);
+        })
 };

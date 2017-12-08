@@ -2,19 +2,23 @@
  * Created by jzelayeta on 11/3/17.
  */
 
-const config = require('../../../config.json');
+exports.StoreValidator = class {
+  constructor() {
+    this.config = require('../../../config.json');
+  }
 
-exports.keyLengthValidator = (key) => {
-    let maxKeyLength = config.maxKeySize;
+  keyLengthValidator(key) {
+    let maxKeyLength = this.config.maxKeySize;
     return key.length > maxKeyLength
-};
+  };
 
-exports.valueLengthValidation = (value) => {
-    let maxValueLength = config.maxValueSize;
+  valueLengthValidation(value) {
+    let maxValueLength = this.config.maxValueSize;
     return value.length > maxValueLength;
-};
+  };
 
-exports.hasEnoughSpace = (key, value, actualNodeSize) => {
-    let nodeSize = config.nodeSize;
+  hasEnoughSpace(key, value, actualNodeSize) {
+    let nodeSize = this.config.nodeSize;
     return nodeSize >= actualNodeSize + key.length + value.length;
-};
+  };
+}

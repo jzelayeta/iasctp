@@ -1,50 +1,62 @@
 /**
  * Created by jzelayeta on 11/2/17.
  */
-var storeValidator = require('../controllers/validations/storeValidations');
-let keyValueStore = new Map();
-let actualSize = 0;
+var { StoreValidator } = require('../controllers/validations/storeValidations');
 
-nodeSize = () => {
-  return keyValueStore.size
-};
+exports.Store = class {
+  constructor() {
+    this.storeValidator = new StoreValidator();
+    this.keyValueStore = new Map();
+    this.actualSize = 0;
+  }
 
-exports.get = (key) => {
+  nodeSize() {
+    return this.keyValueStore.size
+  };
+
+  get(key) {
+    var that = this;
     return new Promise(function(resolve, reject){
-        resolve(keyValueStore.get(key))
+      resolve(that.keyValueStore.get(key))
     });
-};
+  };
 
-exports.add = (key, value) => {
+  add(key, value) {
+    var that = this;
     return new Promise(function (resolve, reject) {
-        if(storeValidator.valueLengthValidation(value) || storeValidator.keyLengthValidator(key) || !storeValidator.hasEnoughSpace(key, value, keyValueStore.size)){
-            reject("Data could not be inserted");
-        } else {
-            let result = keyValueStore.set(key, value);
-            actualSize += (key.length + value.length);
-            resolve(Array.from(keyValueStore.entries()))
-        }
+      if(that.storeValidator.valueLengthValidation(value) || that.storeValidator.keyLengthValidator(key) || !that.storeValidator.hasEnoughSpace(key, value, that.keyValueStore.size)){
+        reject("Data could not be inserted");
+      } else {
+        let result = that.keyValueStore.set(key, value);
+        that.actualSize += (key.length + value.length);
+        resolve(Array.from(that.keyValueStore.entries()))
+      }
     });
-};
+  };
 
-exports.remove = (key) => {
+  remove(key) {
+    var that = this;
     return new Promise(function (resolve, reject) {
-        if(keyValueStore.has(key)){
-            let value = keyValueStore.get(key);
-            actualSize -= (key.length + value.length);
-        }
-        resolve(keyValueStore.delete(key) ? "Element with " + key +" was successfully remove" : "No such key was found");
+      if(that.keyValueStore.has(key)){
+        let value = that.keyValueStore.get(key);
+        that.actualSize -= (key.length + value.length);
+      }
+      resolve(that.keyValueStore.delete(key) ? "Element with " + key +" was successfully remove" : "No such key was found");
     })
-};
+  };
 
-exports.getValuesGreaterThan = (value) => {
+  getValuesGreaterThan(value) {
+    var that = this;
     return new Promise(function(resolve, reject){
-        resolve(Array.from(keyValueStore.values()).filter(v => v > value));
+      var greaterValues = Array.from(that.keyValueStore.values()).filter(v => v > value);
+      resolve(greaterValues);
     });
-};
+  };
 
-exports.getValuesLowerThan = (value) => {
+  getValuesLowerThan(value) {
+    var that = this;
     return new Promise(function(resolve, reject){
-       resolve(Array.from(keyValueStore.values()).filter(v => v < value));
+      resolve(Array.from(that.keyValueStore.values()).filter(v => v < value));
     });
-};
+  };
+}
