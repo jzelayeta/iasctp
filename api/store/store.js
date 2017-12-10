@@ -10,9 +10,10 @@ nodeSize = () => {
 };
 
 exports.get = (key) => {
-    return new Promise(function(resolve, reject){
-        resolve(keyValueStore.get(key))
-    });
+	return keyValueStore.get(key);
+    /*return new Promise(function(resolve, reject){
+
+    });*/
 };
 
 exports.add = (key, value) => {

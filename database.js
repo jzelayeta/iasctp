@@ -11,22 +11,28 @@ if (cluster.isMaster) {
 	app.use(bodyParser.json());
 	app.listen(port);
 	
-	for (var i = 0, len = 1; i < len; i++) {
+	for (var i = 0, len = 2; i < len; i++) {
 		cluster.fork();
 	}
 	
 	app.route('/store/:key')
-        .get(function(req, res) {
-			var message = {
-				'type': 'GET',
-				'data': req.params.key
-			};
+        .get(function(req, res) {	
+			var sended = false;
+			var count = 0;
 			
-			for(const id in cluster.workers) {
-				cluster.workers[id].send(message);
+			for(const id in cluster.workers) {		
+				count++;
+				execute(cluster.workers[id], 'GET', req.params.key).then((response) => {
+					count--;
+					if(!sended) {
+						res.json(response);
+					}
+				}).catch((err) => {
+					count--;
+					if(!sended && count == 0)
+						res.json(err);
+				});
 			}
-			
-			//res.json('no se encontro');
 		})
         .delete(function(req, res) {
 			/*var message = {
@@ -42,12 +48,6 @@ if (cluster.isMaster) {
 	cluster.on('exit', (worker, code, signal) => {
 		console.log(`worker ${worker.process.pid} died`);
 		cluster.fork();
-	});
-	
-	cluster.on('message', (worker, message, handle) => {
-		if (message.type == 'GET') {
-			handle.json(message.data);
-		}
 	});
 }
 else {
@@ -72,31 +72,30 @@ else {
 			})
 	});
 	
-	process.on('message', (message, callback) => {
+	process.on('message', message => {
 		switch(message.type) {
 			case 'GET':
-				store.get(message.data)
-					.then((value) => {
-						var response = {
-							'type': 'GET',
-							'ok': true,
-							'data': value
-						};
-						
-						//como respondo?
-						//process.send(response);
-					})
-					.catch((err) => {
-						var response = {
-							'type': 'GET',
-							'ok': false,
-							'data': err
-						};
-						
-						//como respondo??
-						process.send(response);
-					})
+				var response = store.get(message.data);
+				process.send(response ? response : "");
 				break;
 		}
 	});
 }
+
+function execute(worker, type, data) {	
+	var message = {
+		'type': type,
+		'data': data
+	};
+
+	return new Promise(function (resolve, reject) {	
+		worker.once('message', response => {
+			if(response != "")
+				resolve(response);
+			else
+				reject(response);
+		});
+		
+		worker.send(message);
+	});
+};
