@@ -5,8 +5,9 @@ var express = require('express'),
 	portWorkers = port+1;
     bodyParser = require('body-parser'),
 	store = require('./api/store/store');
-
+	
 if (cluster.isMaster) {
+	cluster.schedulingPolicy = cluster.SCHED_RR;
 	app.use(bodyParser.urlencoded({ extended: true }));
 	app.use(bodyParser.json());
 	app.listen(port);
