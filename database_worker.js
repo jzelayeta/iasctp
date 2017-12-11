@@ -53,8 +53,19 @@ if (cluster.isWorker) {
 	process.on('message', message => {
 		switch(message.type) {
 			case 'GET':
-				var response = store.get(message.data);
-				process.send(response ? response : "");
+				store.get(message.data)
+					.then((response) => {
+						process.send({
+							'ok': true,
+							'data': response
+						});
+					})
+					.catch((err) => {
+						process.send({
+							'ok': false,
+							'data': err
+						})
+					});
 				break;
 			case 'INSERT':
 				store.add(message.data.key, message.data.value)
@@ -64,6 +75,21 @@ if (cluster.isWorker) {
 					.catch((err) => {
 						process.send(err);
 					})
+				break;
+			case 'DELETE':
+				store.remove(message.data)
+					.then((response) => {
+						process.send({
+							'ok': true,
+							'data': response
+						});;		
+					})
+					.catch((err) => {
+						process.send({
+							'ok': false,
+							'data': err
+						});
+					});
 				break;
 		}
 	});

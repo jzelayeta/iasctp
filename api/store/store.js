@@ -10,10 +10,12 @@ nodeSize = () => {
 };
 
 exports.get = (key) => {
-	return keyValueStore.get(key);
-    /*return new Promise(function(resolve, reject){
-
-    });*/
+    return new Promise(function(resolve, reject){
+		if(keyValueStore.get(key))
+			resolve(keyValueStore.get(key));
+		else
+			reject("No such key was found");
+    });
 };
 
 exports.add = (key, value) => {
@@ -34,7 +36,13 @@ exports.remove = (key) => {
             let value = keyValueStore.get(key);
             actualSize -= (key.length + value.length);
         }
-        resolve(keyValueStore.delete(key) ? "Element with " + key +" was successfully remove" : "No such key was found");
+		
+		if(keyValueStore.delete(key)) {
+			resolve("Element with " + key +" was successfully remove");
+		}
+		else {
+			resolve("No such key was found");
+		}
     })
 };
 

@@ -21,35 +21,12 @@ if (cluster.isMaster) {
 	
 	app.route('/store/:key')
         .get(function(req, res) {	
-			var sended = false;
-			var count = 0;
-			
-			for(const id in cluster.workers) {		
-				count++;
-				execute(cluster.workers[id], 'GET', req.params.key).then((response) => {
-					count--;
-					if(!sended) {
-						sended = true;
-						res.json(response);
-					}
-				}).catch((err) => {
-					count--;
-					if(!sended && count == 0) {
-						sended = true;
-						res.json("");
-					}
-				});
-			}
+			resendToChildren('GET', req, res);
 		})
         .delete(function(req, res) {
-			/*var message = {
-				'type': 'DELETE',
-				'body': req.body
-			};
-			
-			for(const worker in cluster.workers) {
-				worker.send(message);
-			}*/
+			resendToChildren('DELETE', req, res, function() {
+				delete keys[req.params.key];
+			});
 		});
 	
 	cluster.on('exit', (worker, code, signal) => {
@@ -90,10 +67,10 @@ function execute(worker, type, data) {
 
 	return new Promise(function (resolve, reject) {	
 		worker.once('message', response => {
-			if(response != "")
-				resolve(response);
+			if(response.ok)
+				resolve(response.data);
 			else
-				reject(response);
+				reject(response.data);
 		});
 		
 		worker.send(message);
@@ -104,5 +81,31 @@ function deleteKeys(pid) {
 	for(var id in keys) {
 		if(keys[id] == pid)
 			delete keys[id];
+	}
+}
+
+function resendToChildren(type, req, res, success) {
+	var sended = false;
+	var count = 0;
+	
+	for(const id in cluster.workers) {		
+		count++;
+		execute(cluster.workers[id], type, req.params.key).then((response) => {
+			count--;
+			if(!sended) {
+				
+				if(success)
+					success();
+				
+				sended = true;
+				res.json(response);
+			}
+		}).catch((err) => {
+			count--;
+			if(!sended && count == 0) {
+				sended = true;
+				res.json(err);
+			}
+		});
 	}
 }
