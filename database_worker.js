@@ -19,22 +19,35 @@ if (cluster.isWorker) {
 		let key = req.body.key;
 		let value = req.body.value;
 		
-		store.add(key, value)
-			.then((map) => {
-				res.json(map);
-			})
-			.catch((err) => {
-				var data = {
-					'key': key,
-					'value': value
-				};
-				
-				execute(process, 'FORK', data).then(response => {
-					res.json(response);
-				}).catch(err => {
-					res.json("Data could not be inserted");
-				});
-			})
+		execute(process, 'KEY_EXISTS', key).then(response => {		
+			store.add(key, value)
+				.then((map) => {
+					execute(process, 'ADD_KEY', key).then(key_exists => {
+						res.json(map);
+					}).catch(err => {
+						res.json(map);
+					});
+				})
+				.catch((err) => {
+					var data = {
+						'key': key,
+						'value': value
+					};
+					
+					execute(process, 'FORK', data).then(response => {												
+						execute(process, 'ADD_KEY', key).then(key_exists => {
+							res.json(response);
+						}).catch(err => {
+							res.json(response);
+						});
+						
+					}).catch(err => {
+						res.json("Data could not be inserted");
+					});
+				})			
+		}).catch(err => {
+			res.json("Key already exists");
+		});	
 	});
 	
 	process.on('message', message => {

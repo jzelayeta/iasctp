@@ -8,6 +8,8 @@ cluster.setupMaster({
   exec: './database_worker.js',
   args: ['--use', 'https']
 });
+
+var keys = [];
 	
 if (cluster.isMaster) {
 	cluster.schedulingPolicy = cluster.SCHED_RR;
@@ -64,6 +66,15 @@ if (cluster.isMaster) {
 				}).catch(err => {
 					sender.send(err);
 				});
+			case 'ADD_KEY':	
+				keys[message.data] = sender.process.pid;
+				sender.send(true);
+				break;
+			case 'KEY_EXISTS':
+				if(!keys[message.data])
+					sender.send(true);
+				else
+					sender.send("");			
 				break;
 		}
 	});
