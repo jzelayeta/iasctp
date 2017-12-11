@@ -12,9 +12,7 @@ if (cluster.isMaster) {
 	app.use(bodyParser.json());
 	app.listen(port);
 	
-	for (var i = 0, len = 2; i < len; i++) {
-		cluster.fork();
-	}
+	cluster.fork();
 	
 	app.route('/store/:key')
         .get(function(req, res) {	
@@ -33,7 +31,7 @@ if (cluster.isMaster) {
 					count--;
 					if(!sended && count == 0) {
 						sended = true;
-						res.json(err);
+						res.json("");
 					}
 				});
 			}
@@ -53,6 +51,19 @@ if (cluster.isMaster) {
 		console.log(`worker ${worker.process.pid} died`);
 		cluster.fork();
 	});
+	
+	cluster.on('message', (sender, message) => {
+		switch(message.type) {
+			case 'FORK':
+				var worker = cluster.fork();
+				execute(worker, 'INSERT', message.data).then(response => {
+					sender.send(response);
+				}).catch(err => {
+					sender.send(err);
+				});
+				break;
+		}
+	});
 }
 else {
 	app.use(bodyParser.urlencoded({ extended: true }));
@@ -70,10 +81,19 @@ else {
 		
 		store.add(key, value)
 			.then((map) => {
-				res.json(map)
+				res.json(map);
 			})
 			.catch((err) => {
-				res.json(err)
+				var data = {
+					'key': key,
+					'value': value
+				};
+				
+				execute(process, 'FORK', data).then(response => {
+					res.json(response);
+				}).catch(err => {
+					res.json("Data could not be inserted");
+				});
 			})
 	});
 	
@@ -82,6 +102,15 @@ else {
 			case 'GET':
 				var response = store.get(message.data);
 				process.send(response ? response : "");
+				break;
+			case 'INSERT':
+				store.add(message.data.key, message.data.value)
+					.then((map) => {
+						process.send(map);
+					})
+					.catch((err) => {
+						process.send(err);
+					})
 				break;
 		}
 	});
