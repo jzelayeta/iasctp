@@ -54,6 +54,7 @@ if (cluster.isMaster) {
 	
 	cluster.on('exit', (worker, code, signal) => {
 		console.log(`worker ${worker.process.pid} died`);
+		deleteKeys(worker.process.pid);
 		cluster.fork();
 	});
 	
@@ -98,3 +99,10 @@ function execute(worker, type, data) {
 		worker.send(message);
 	});
 };
+
+function deleteKeys(pid) {
+	for(var id in keys) {
+		if(keys[id] == pid)
+			delete keys[id];
+	}
+}
