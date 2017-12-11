@@ -66,6 +66,7 @@ if (cluster.isMaster) {
 				}).catch(err => {
 					sender.send(err);
 				});
+				break;
 			case 'ADD_KEY':	
 				keys[message.data] = sender.process.pid;
 				sender.send(true);
