@@ -26,12 +26,15 @@ if (cluster.isMaster) {
 				execute(cluster.workers[id], 'GET', req.params.key).then((response) => {
 					count--;
 					if(!sended) {
+						sended = true;
 						res.json(response);
 					}
 				}).catch((err) => {
 					count--;
-					if(!sended && count == 0)
+					if(!sended && count == 0) {
+						sended = true;
 						res.json(err);
+					}
 				});
 			}
 		})
@@ -64,6 +67,7 @@ else {
 	app.route('/store/').post(function(req, res){
 		let key = req.body.key;
 		let value = req.body.value;
+		
 		store.add(key, value)
 			.then((map) => {
 				res.json(map)
