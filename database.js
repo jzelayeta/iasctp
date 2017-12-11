@@ -2,9 +2,12 @@ var express = require('express'),
 	cluster = require('cluster'),
     app = express(),
     port = process.env.PORT || 3000,
-	portWorkers = port+1;
-    bodyParser = require('body-parser'),
-	store = require('./api/store/store');
+    bodyParser = require('body-parser');
+
+cluster.setupMaster({
+  exec: './database_worker.js',
+  args: ['--use', 'https']
+});
 	
 if (cluster.isMaster) {
 	cluster.schedulingPolicy = cluster.SCHED_RR;
@@ -61,56 +64,6 @@ if (cluster.isMaster) {
 				}).catch(err => {
 					sender.send(err);
 				});
-				break;
-		}
-	});
-}
-else {
-	app.use(bodyParser.urlencoded({ extended: true }));
-	app.use(bodyParser.json());
-	app.listen(portWorkers);
-	
-	console.log('todo list RESTful API server started on: ' + portWorkers);
-
-	module.exports = app;
-	console.log(`Worker ${process.pid} started`);
-	
-	app.route('/store/').post(function(req, res){
-		let key = req.body.key;
-		let value = req.body.value;
-		
-		store.add(key, value)
-			.then((map) => {
-				res.json(map);
-			})
-			.catch((err) => {
-				var data = {
-					'key': key,
-					'value': value
-				};
-				
-				execute(process, 'FORK', data).then(response => {
-					res.json(response);
-				}).catch(err => {
-					res.json("Data could not be inserted");
-				});
-			})
-	});
-	
-	process.on('message', message => {
-		switch(message.type) {
-			case 'GET':
-				var response = store.get(message.data);
-				process.send(response ? response : "");
-				break;
-			case 'INSERT':
-				store.add(message.data.key, message.data.value)
-					.then((map) => {
-						process.send(map);
-					})
-					.catch((err) => {
-						process.send(err);
-					})
 				break;
 		}
 	});
