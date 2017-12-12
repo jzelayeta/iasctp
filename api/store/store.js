@@ -47,12 +47,14 @@ exports.remove = (key) => {
 
 exports.getValuesGreaterThan = (value) => {
     return new Promise(function(resolve, reject){
-        resolve(Array.from(keyValueStore.values()).filter(v => v > value));
+		var results = Array.from(keyValueStore.values()).filter(v => v > value);
+        resolve(results);
     });
 };
 
 exports.getValuesLowerThan = (value) => {
     return new Promise(function(resolve, reject){
-       resolve(Array.from(keyValueStore.values()).filter(v => v < value));
+		var results = Array.from(keyValueStore.values()).filter(v => v < value);
+		resolve(results);
     });
 };

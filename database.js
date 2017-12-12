@@ -139,11 +139,11 @@ function getAll(type, req, res) {
 	var results = [];
 	for(const id in cluster.workers) {		
 		count++;
-		execute(cluster.workers[id], type, req.params.key).then((response) => {
+		execute(cluster.workers[id], type, req.params.value).then((response) => {
 			count--;
 			
 			for(var result in response) {
-				results.push(result);
+				results.push(response[result]);
 			}
 					
 			if(count == 0) {				
@@ -154,7 +154,7 @@ function getAll(type, req, res) {
 			count--;
 			
 			for(var result in response) {
-				results.push(result);
+				results.push(response[result]);
 			}
 			
 			if(count == 0) {
