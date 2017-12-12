@@ -70,21 +70,29 @@ if (cluster.isWorker) {
 			case 'INSERT':
 				store.add(message.data.key, message.data.value)
 					.then((map) => {
-						process.send(map);
+						process.send({
+							'ok': true,
+							'data': map
+						});
 					})
 					.catch((err) => {
-						process.send(err);
+						process.send({
+							'ok': false,
+							'data': err
+						});
 					})
 				break;
 			case 'DELETE':
 				store.remove(message.data)
 					.then((response) => {
+						console.log("founded: " + response);
 						process.send({
 							'ok': true,
 							'data': response
 						});;		
 					})
 					.catch((err) => {
+						console.log("not founded: " + err);
 						process.send({
 							'ok': false,
 							'data': err
@@ -103,10 +111,10 @@ function execute(worker, type, data) {
 
 	return new Promise(function (resolve, reject) {	
 		worker.once('message', response => {
-			if(response != "")
-				resolve(response);
+			if(response.ok)
+				resolve(response.data);
 			else
-				reject(response);
+				reject(response.data);
 		});
 		
 		worker.send(message);

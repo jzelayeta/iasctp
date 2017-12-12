@@ -40,20 +40,35 @@ if (cluster.isMaster) {
 			case 'FORK':
 				var worker = cluster.fork();
 				execute(worker, 'INSERT', message.data).then(response => {
-					sender.send(response);
+					sender.send({
+						'ok': true,
+						'data': response
+					});
 				}).catch(err => {
-					sender.send(err);
+					sender.send({
+						'ok': false,
+						'data': err
+					});
 				});
 				break;
 			case 'ADD_KEY':	
 				keys[message.data] = sender.process.pid;
-				sender.send(true);
+				sender.send({
+					'ok': true,
+					'data': ''
+				});
 				break;
 			case 'KEY_EXISTS':
 				if(!keys[message.data])
-					sender.send(true);
+					sender.send({
+						'ok': true,
+						'data': ''
+					});
 				else
-					sender.send("");			
+					sender.send({
+						'ok': false,
+						'data': ''
+					});			
 				break;
 		}
 	});
@@ -92,8 +107,7 @@ function resendToChildren(type, req, res, success) {
 		count++;
 		execute(cluster.workers[id], type, req.params.key).then((response) => {
 			count--;
-			if(!sended) {
-				
+			if(!sended) {				
 				if(success)
 					success();
 				
