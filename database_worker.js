@@ -85,14 +85,12 @@ if (cluster.isWorker) {
 			case 'DELETE':
 				store.remove(message.data)
 					.then((response) => {
-						console.log("founded: " + response);
 						process.send({
 							'ok': true,
 							'data': response
 						});;		
 					})
 					.catch((err) => {
-						console.log("not founded: " + err);
 						process.send({
 							'ok': false,
 							'data': err

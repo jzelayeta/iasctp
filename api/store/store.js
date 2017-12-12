@@ -35,13 +35,12 @@ exports.remove = (key) => {
         if(keyValueStore.has(key)){
             let value = keyValueStore.get(key);
             actualSize -= (key.length + value.length);
-        }
-		
-		if(keyValueStore.delete(key)) {
+			
+			keyValueStore.delete(key)
 			resolve("Element with " + key +" was successfully remove");
-		}
+        }
 		else {
-			resolve("No such key was found");
+			reject("No such key was found");
 		}
     })
 };
