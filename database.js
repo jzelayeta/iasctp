@@ -67,7 +67,7 @@ if (cluster.isMaster) {
 				else
 					sender.send({
 						'ok': false,
-						'data': ''
+						'data': 'Key already exists'
 					});			
 				break;
 		}

@@ -42,11 +42,11 @@ if (cluster.isWorker) {
 						});
 						
 					}).catch(err => {
-						res.json("Data could not be inserted");
+						res.json(err);
 					});
 				})			
 		}).catch(err => {
-			res.json("Key already exists");
+			res.json(err);
 		});	
 	});
 	
