@@ -1,7 +1,7 @@
 var express = require('express'),
 	cluster = require('cluster'),
     app = express(),
-	portWorkers = (process.env.PORT || 3000) + 1;
+	portWorkers = 4001;
     bodyParser = require('body-parser'),
 	store = require('./api/store/store');
 

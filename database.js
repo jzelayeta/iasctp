@@ -1,7 +1,7 @@
 var express = require('express'),
 	cluster = require('cluster'),
     app = express(),
-    port = process.env.PORT || 3000,
+    port = 4000,
     bodyParser = require('body-parser');
 
 cluster.setupMaster({
