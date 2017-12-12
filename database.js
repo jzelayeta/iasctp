@@ -28,6 +28,16 @@ if (cluster.isMaster) {
 				delete keys[req.params.key];
 			});
 		});
+		
+	app.route('/store/greater/:value')
+		.get(function(req, res) {
+			getAll('GREATER', req, res);
+		});
+		
+	app.route('/store/lower/:value')
+		.get(function(req, res) {
+			getAll('LOWER', req, res);
+		});
 	
 	cluster.on('exit', (worker, code, signal) => {
 		console.log(`worker ${worker.process.pid} died`);
@@ -97,7 +107,7 @@ function deleteKeys(pid) {
 		if(keys[id] == pid)
 			delete keys[id];
 	}
-}
+};
 
 function resendToChildren(type, req, res, success) {
 	var sended = false;
@@ -122,4 +132,35 @@ function resendToChildren(type, req, res, success) {
 			}
 		});
 	}
-}
+};
+
+function getAll(type, req, res) {
+	var count = 0;
+	var results = [];
+	for(const id in cluster.workers) {		
+		count++;
+		execute(cluster.workers[id], type, req.params.key).then((response) => {
+			count--;
+			
+			for(var result in response) {
+				results.push(result);
+			}
+					
+			if(count == 0) {				
+				sended = true;
+				res.json(results);
+			}
+		}).catch((err) => {
+			count--;
+			
+			for(var result in response) {
+				results.push(result);
+			}
+			
+			if(count == 0) {
+				sended = true;
+				res.json(results);
+			}
+		});
+	}
+};

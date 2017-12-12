@@ -97,6 +97,36 @@ if (cluster.isWorker) {
 						});
 					});
 				break;
+			case 'GREATER':
+				store.getValuesGreaterThan(message.data)
+					.then((response) => {
+						process.send({
+							'ok': true,
+							'data': response
+						});
+					})
+					.catch((err) => {
+						process.send({
+							'ok': false,
+							'data': []
+						});
+					});
+				break;
+			case 'LOWER':
+				store.getValuesLowerThan(message.data)
+					.then((response) => {
+						process.send({
+							'ok': true,
+							'data': response
+						});
+					})
+					.catch((err) => {
+						process.send({
+							'ok': false,
+							'data': []
+						});
+					});
+				break;
 		}
 	});
 }
